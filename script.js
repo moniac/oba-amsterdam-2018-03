@@ -63,21 +63,18 @@ geojson.features.forEach(function (marker) {
 		.addTo(map)
 })
 
-var scene = new THREE.Scene()
-var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 )
+var loader = new THREE.OBJLoader()
+var options = []
 
-var loader = new THREE.OBJLoader();
-
-// load a resource
 loader.load(
 	// resource URL
-	'3d-model.obj',
+	'./3d-model.obj',
 	// called when resource is loaded
 	function ( object ) {
-		object.position.z = -2000
-		object.position.y = 0
-		object.position.x = 0
-		scene.add( object );
+		object.rotateX(90)
+		object.rotateY(-90)
+		object.scale.set(0.25,0.25,0.25)
+		threebox.addAtCoordinate(object, [4.895168, 52.370216, 0])
 
 	},
 	// called when loading is in progresses
@@ -92,34 +89,11 @@ loader.load(
 		console.log( 'An error happened' );
 
 	}
-);
+)
 
-var renderer = new THREE.WebGLRenderer({alpha: true})
-renderer.setSize( window.innerWidth, window.innerHeight )
-document.body.appendChild( renderer.domElement )
-
-var geometry = new THREE.BoxGeometry( 1, 1, 1 )
-var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } )
-var cube = new THREE.Mesh( geometry, material )
-scene.add( cube )
-
-camera.position.z = 10
-
-const light = new THREE.AmbientLight(0x333333)
-scene.add(light)
-
-function resizeWindow() {
-	renderer.setSize(window.innerWidth, window.innerHeight)
-	renderer.setPixelRatio(window.devicePixelRatio)
-
-	camera.aspect = window.innerWidth / window.innerHeight
-	camera.updateProjectMatrix()
-}
-
-// window.addEventListener('resize', resizeWindow)
-
-function animate() {
-	requestAnimationFrame( animate )
-	renderer.render( scene, camera )
-}
-animate()
+var threebox = new Threebox(map)
+threebox.setupDefaultLights()
+// var geometry = new THREE.BoxGeometry( 10, 10, 10 );
+// var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+// var cube = new THREE.Mesh( geometry, material );
+// threebox.addAtCoordinate(cube, [4.895168, 52.370216, 0])
