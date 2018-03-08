@@ -63,37 +63,62 @@ geojson.features.forEach(function (marker) {
 		.addTo(map)
 })
 
+var mtlLoader = new THREE.MTLLoader();
 var loader = new THREE.OBJLoader()
+THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() )
 var options = []
-
-loader.load(
-	// resource URL
-	'./3d-model.obj',
-	// called when resource is loaded
-	function ( object ) {
-		object.rotateX(90)
-		object.rotateY(-90)
-		object.scale.set(0.25,0.25,0.25)
-		threebox.addAtCoordinate(object, [4.895168, 52.370216, 0])
-
-	},
-	// called when loading is in progresses
-	function ( xhr ) {
-
-		console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
-
-	},
-	// called when loading has errors
-	function ( error ) {
-
-		console.log( 'An error happened' );
-
-	}
-)
-
 var threebox = new Threebox(map)
 threebox.setupDefaultLights()
-// var geometry = new THREE.BoxGeometry( 10, 10, 10 );
-// var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-// var cube = new THREE.Mesh( geometry, material );
-// threebox.addAtCoordinate(cube, [4.895168, 52.370216, 0])
+
+var onProgress = function ( xhr ) {
+	if ( xhr.lengthComputable ) {
+		var percentComplete = xhr.loaded / xhr.total * 100;
+		console.log( Math.round(percentComplete, 2) + '% downloaded' );
+	}
+};
+var onError = function ( xhr ) { 
+	console.log( xhr );
+};
+
+var mtlLoader = new THREE.MTLLoader();
+mtlLoader.load( './models/obj/3d-model.mtl', function( materials ) {
+	materials.preload();
+	var objLoader = new THREE.OBJLoader();
+	// objLoader.setMaterials( materials );
+	objLoader.load( './models/obj/3d-model.obj', function ( object ) {
+
+		object.scale.set( 0.005, 0.005, 0.005 )
+		object.rotateX( ( Math.PI / 180 ) * 90 )
+		object.castShadow = true
+		
+		threebox.addAtCoordinate(object, [4.895168, 52.370216, 1] )
+		
+	}, onProgress, onError);
+}, onProgress, onError);
+
+
+// loader.load(
+// 	// resource URL
+// 	'./3d-model.obj',
+// 	// called when resource is loaded
+// 	function ( object ) {
+// 		object.rotateX(90)
+// 		object.rotateY(-90)
+// 		object.scale.set(0.25,0.25,0.25)
+// 		threebox.addAtCoordinate(object, [4.895168, 52.370216, 0])
+
+// 	},
+// 	// called when loading is in progresses
+// 	function ( xhr ) {
+
+// 		console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+
+// 	},
+// 	// called when loading has errors
+// 	function ( error ) {
+
+// 		console.log( 'An error happened' );
+
+// 	}
+// )
+
