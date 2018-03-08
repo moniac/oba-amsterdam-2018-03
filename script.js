@@ -1,10 +1,13 @@
+import {ObjectLoader, JSONLoader} from './three.module.js'
+console.log(ObjectLoader)
+
 mapboxgl.accessToken = 'pk.eyJ1IjoibW9uaWFjIiwiYSI6ImNqZWZnaThueTFmdWEyd2t0cW42bTMwYnAifQ.mIQv6AsUk0iv-CjIGqYbTw'
 
 var map = new mapboxgl.Map({
 	container: 'map',
 	style: 'mapbox://styles/mapbox/light-v9',
 	center: [4.895168, 52.370216],
-	zoom: 13
+	zoom: 20
 })
 
 // code from the next step will go here!
@@ -63,9 +66,8 @@ geojson.features.forEach(function (marker) {
 		.addTo(map)
 })
 
-var mtlLoader = new THREE.MTLLoader();
-var loader = new THREE.OBJLoader()
-THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() )
+var loader = new THREE.ObjectLoader()
+// THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() )
 var options = []
 var threebox = new Threebox(map)
 threebox.setupDefaultLights()
@@ -81,44 +83,19 @@ var onError = function ( xhr ) {
 };
 
 var mtlLoader = new THREE.MTLLoader();
-mtlLoader.load( './models/obj/3d-model.mtl', function( materials ) {
+mtlLoader.setPath('./models/obj/')
+mtlLoader.load( '3d-model.mtl', function( materials ) {
 	materials.preload();
-	var objLoader = new THREE.OBJLoader();
+	var models = './models/obj/3d-model.json'
 	// objLoader.setMaterials( materials );
-	objLoader.load( './models/obj/3d-model.obj', function ( object ) {
-
-		object.scale.set( 0.005, 0.005, 0.005 )
+	loader.load( './models/obj/apartment-house.json', function ( object ) {
+		object.scale.set( 0.05, 0.05, 0.05 )
 		object.rotateX( ( Math.PI / 180 ) * 90 )
+		object.rotateY( ( Math.PI / 180 ) * -180 )
 		object.castShadow = true
+		object.receiveShadow = true
 		
 		threebox.addAtCoordinate(object, [4.895168, 52.370216, 1] )
 		
 	}, onProgress, onError);
 }, onProgress, onError);
-
-
-// loader.load(
-// 	// resource URL
-// 	'./3d-model.obj',
-// 	// called when resource is loaded
-// 	function ( object ) {
-// 		object.rotateX(90)
-// 		object.rotateY(-90)
-// 		object.scale.set(0.25,0.25,0.25)
-// 		threebox.addAtCoordinate(object, [4.895168, 52.370216, 0])
-
-// 	},
-// 	// called when loading is in progresses
-// 	function ( xhr ) {
-
-// 		console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
-
-// 	},
-// 	// called when loading has errors
-// 	function ( error ) {
-
-// 		console.log( 'An error happened' );
-
-// 	}
-// )
-
