@@ -1,5 +1,4 @@
 import {ObjectLoader, JSONLoader} from './three.module.js'
-console.log(ObjectLoader)
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibW9uaWFjIiwiYSI6ImNqZWZnaThueTFmdWEyd2t0cW42bTMwYnAifQ.mIQv6AsUk0iv-CjIGqYbTw'
 
